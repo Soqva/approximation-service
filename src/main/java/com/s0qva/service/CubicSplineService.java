@@ -5,12 +5,13 @@ import org.mariuszgromada.math.mxparser.Argument;
 import org.mariuszgromada.math.mxparser.Expression;
 
 public final class CubicSplineService extends ApproximationService {
-    private final double step = (getRightBorder() - getLeftBorder()) / getN();
+    private final double step = (getRightBorder() - getLeftBorder()) / getNumberOfGaps();
 
-    public CubicSplineService(double leftBorder, double rightBorder, double numberParts, String function) {
+    public CubicSplineService(double leftBorder, double rightBorder, int numberParts, String function) {
         super(leftBorder, rightBorder, numberParts, function);
     }
 
+    @Override
     public double calculateValueInterpolationPoint(double interpolationXPoint) {
         int index = findIndex(interpolationXPoint);
         double result;
@@ -24,34 +25,34 @@ public final class CubicSplineService extends ApproximationService {
     }
 
     private double calculateFirstTerm(int index, double interpolationXPoint) {
-        return getyValues().get(index - 1) * Math.pow(interpolationXPoint - getxValues().get(index), 2)
-                * (2 * (interpolationXPoint - getxValues().get(index - 1)) + step)
+        return getFunctionValues().get(index - 1) * Math.pow(interpolationXPoint - getArgumentValues().get(index), 2)
+                * (2 * (interpolationXPoint - getArgumentValues().get(index - 1)) + step)
                 / Math.pow(step, 3);
     }
 
     private double calculateSecondTerm(int index, double interpolationXPoint) {
-        return getyValues().get(index) * Math.pow((interpolationXPoint - getxValues().get(index - 1)), 2)
-                * (2 * (getxValues().get(index) - interpolationXPoint) + step)
+        return getFunctionValues().get(index) * Math.pow((interpolationXPoint - getArgumentValues().get(index - 1)), 2)
+                * (2 * (getArgumentValues().get(index) - interpolationXPoint) + step)
                 / Math.pow(step, 3);
     }
 
     private double calculateThirdTerm(int index, double interpolationXPoint) {
-        return findLowerMValue(index - 1) * Math.pow((interpolationXPoint - getxValues().get(index)), 2)
-                * (interpolationXPoint - getxValues().get(index - 1))
+        return findLowerMValue(index - 1) * Math.pow((interpolationXPoint - getArgumentValues().get(index)), 2)
+                * (interpolationXPoint - getArgumentValues().get(index - 1))
                 / Math.pow(step, 2);
     }
 
     private double calculateFourthTerm(int index, double interpolationXPoint) {
-        return findLowerMValue(index) * Math.pow((interpolationXPoint - getxValues().get(index - 1)), 2)
-                * (interpolationXPoint - getxValues().get(index))
+        return findLowerMValue(index) * Math.pow((interpolationXPoint - getArgumentValues().get(index - 1)), 2)
+                * (interpolationXPoint - getArgumentValues().get(index))
                 / Math.pow(step, 2);
     }
 
     private int findIndex(double interpolationXPoint) {
         int index = 1;
 
-        for (int i = 1; i < getxValues().size(); i++) {
-            if (getxValues().get(i - 1) <= interpolationXPoint && interpolationXPoint <= getxValues().get(i)) {
+        for (int i = 1; i < getArgumentValues().size(); i++) {
+            if (getArgumentValues().get(i - 1) <= interpolationXPoint && interpolationXPoint <= getArgumentValues().get(i)) {
                 index = i;
                 break;
             }
@@ -65,7 +66,7 @@ public final class CubicSplineService extends ApproximationService {
             return 0;
         }
 
-        if (index == getN()) {
+        if (index == getNumberOfGaps()) {
             return calculateDerivativeValue(getRightBorder());
         }
 
@@ -81,8 +82,8 @@ public final class CubicSplineService extends ApproximationService {
     }
 
     private double findCValue(int index) {
-        return 3 * (getyValues().get(index + 1) - getyValues().get(index - 1))
-                / ((getRightBorder() - getLeftBorder()) / getN());
+        return 3 * (getFunctionValues().get(index + 1) - getFunctionValues().get(index - 1))
+                / ((getRightBorder() - getLeftBorder()) / getNumberOfGaps());
     }
 
     private double findUpperMValue(int index) {
@@ -96,11 +97,5 @@ public final class CubicSplineService extends ApproximationService {
     private double calculateDerivativeValue(double argument) {
         Argument xArgument = new Argument("x = " + argument);
         return new Expression(String.format("der(%s, x)", getFunction().getFunctionExpressionString()), xArgument).calculate();
-    }
-
-    @Override
-    public double calculateFunctionValue(double argument) {
-        Argument xArgument = new Argument("x = " + argument);
-        return new Expression("function(x)", getFunction(), xArgument).calculate();
     }
 }

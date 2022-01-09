@@ -1,71 +1,54 @@
 package com.s0qva.service;
 
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.mariuszgromada.math.mxparser.Argument;
+import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.Function;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Getter
+@ToString
+@EqualsAndHashCode
 public abstract class ApproximationService {
+    private final List<Double> argumentValues;
+    private final List<Double> functionValues;
+    private final Function function;
     private final double leftBorder;
     private final double rightBorder;
-    private final double n;
-    private final List<Double> xValues;
-    private final List<Double> yValues;
-    private final Function function;
+    private final int numberOfGaps;
 
-    public ApproximationService(double leftBorder, double rightBorder, double n, String function) {
+    public ApproximationService(double leftBorder, double rightBorder, int numberOfGaps, String function) {
         this.leftBorder = leftBorder;
         this.rightBorder = rightBorder;
-        this.n = n;
+        this.numberOfGaps = numberOfGaps;
         this.function = new Function("function(x) = " + function);
-        this.xValues = createXValues();
-        this.yValues = createYValues(xValues);
+        this.argumentValues = createArgumentValues();
+        this.functionValues = createFunctionValues();
     }
 
-    public abstract double calculateFunctionValue(double argument);
+    public abstract double calculateValueInterpolationPoint(double interpolationArgumentValue);
 
-    private List<Double> createXValues() {
-        List<Double> xValues = new ArrayList<>();
-        double step = (rightBorder - leftBorder) / n;
-
-        xValues.add(leftBorder);
-
-        for (int i = 1; i <= n; i++) {
-            Double previousValue = xValues.get(i - 1);
-            xValues.add(previousValue + step);
-        }
-
-        return xValues;
+    public double calculateFunctionValue(double argumentValue) {
+        Argument argument = new Argument("x = " + argumentValue);
+        return new Expression("function(x)", getFunction(), argument).calculate();
     }
 
-    private List<Double> createYValues(List<Double> xValues) {
-        return xValues.stream()
-                .map(this::calculateFunctionValue)
+    private List<Double> createArgumentValues() {
+        double step = (rightBorder - leftBorder) / numberOfGaps;
+
+        return Stream.iterate(leftBorder, currentArgumentValue -> currentArgumentValue + step)
+                .limit(numberOfGaps + 1)
                 .collect(Collectors.toList());
     }
 
-    public double getLeftBorder() {
-        return leftBorder;
-    }
-
-    public double getRightBorder() {
-        return rightBorder;
-    }
-
-    public double getN() {
-        return n;
-    }
-
-    public List<Double> getxValues() {
-        return xValues;
-    }
-
-    public List<Double> getyValues() {
-        return yValues;
-    }
-
-    public Function getFunction() {
-        return function;
+    private List<Double> createFunctionValues() {
+        return argumentValues.stream()
+                .map(this::calculateFunctionValue)
+                .collect(Collectors.toList());
     }
 }

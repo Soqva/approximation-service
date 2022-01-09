@@ -30,11 +30,11 @@ public class MainPageServlet extends HttpServlet {
                 function
         );
 
-        final List<Double> xValues = lagrangianApproximationService.getxValues().stream()
+        final List<Double> xValues = lagrangianApproximationService.getArgumentValues().stream()
                 .map(xValue -> Math.round(xValue * 100.0) / 100.0)
                 .collect(Collectors.toList());
 
-        final List<Double> yValues = lagrangianApproximationService.getyValues().stream()
+        final List<Double> yValues = lagrangianApproximationService.getFunctionValues().stream()
                 .map(yValue -> Math.round(yValue * 100.0) / 100.0)
                 .collect(Collectors.toList());
 

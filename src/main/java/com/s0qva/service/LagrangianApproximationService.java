@@ -1,23 +1,20 @@
 package com.s0qva.service;
 
-import org.mariuszgromada.math.mxparser.Argument;
-import org.mariuszgromada.math.mxparser.Expression;
-
 import java.util.List;
 
 public final class LagrangianApproximationService extends ApproximationService {
 
-
-    public LagrangianApproximationService(double leftBorder, double rightBorder, double polynomialDegree, String function) {
+    public LagrangianApproximationService(double leftBorder, double rightBorder, int polynomialDegree, String function) {
         super(leftBorder, rightBorder, polynomialDegree, function);
     }
 
+    @Override
     public double calculateValueInterpolationPoint(double interpolationXPoint) {
         double result = 0.0;
 
-        for (int i = 0; i < getN(); i++) {
-            result += calculateNumeratorLagrangePolynomial(interpolationXPoint, getxValues(), i) * getyValues().get(i)
-                    / calculateDenominatorLagrangePolynomial(getxValues().get(i), getxValues(), i);
+        for (int i = 0; i < getNumberOfGaps(); i++) {
+            result += calculateNumeratorLagrangePolynomial(interpolationXPoint, getArgumentValues(), i) * getFunctionValues().get(i)
+                    / calculateDenominatorLagrangePolynomial(getArgumentValues().get(i), getArgumentValues(), i);
         }
 
         return result;
@@ -26,7 +23,7 @@ public final class LagrangianApproximationService extends ApproximationService {
     private double calculateNumeratorLagrangePolynomial(double interpolationXPoint, List<Double> values, int skipPosition) {
         double result = 1.0;
 
-        for (int i = 0; i < getN(); i++) {
+        for (int i = 0; i < getNumberOfGaps(); i++) {
             if (i == skipPosition) {
                 continue;
             }
@@ -39,7 +36,7 @@ public final class LagrangianApproximationService extends ApproximationService {
     private double calculateDenominatorLagrangePolynomial(double kPoint, List<Double> values, int skipPosition) {
         double result = 1.0;
 
-        for (int i = 0; i < getN(); i++) {
+        for (int i = 0; i < getNumberOfGaps(); i++) {
             if (i == skipPosition) {
                 continue;
             }
@@ -49,9 +46,9 @@ public final class LagrangianApproximationService extends ApproximationService {
         return result;
     }
 
-    @Override
-    public double calculateFunctionValue(double argument) {
-        Argument xArgument = new Argument("x = " + argument);
+   /* @Override
+    public double calculateFunctionValue(double argumentValue) {
+        Argument xArgument = new Argument("x = " + argumentValue);
         return new Expression("function(x)", getFunction(), xArgument).calculate();
-    }
+    }*/
 }
