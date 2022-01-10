@@ -7,42 +7,40 @@
         .element {
             display: grid;
             grid-gap: 1rem;
-            grid-template-columns: repeat(${requestScope.n}, 3rem);
+            grid-template-columns: repeat(${requestScope.numberOfGaps}, 3rem);
         }
     </style>
-    <style><%@include file="/WEB-INF/css/result-page.css"%></style>
+    <style>
+        <%@include file="/WEB-INF/css/result-page-styles.css" %>
+    </style>
 </head>
 <body>
-<c:if test="${requestScope.lagrangianResult != null and requestScope.cubicResult != null}">
-    <div>
-        <div class="center">
-            <div class="values">
+<div>
+    <div class="center">
+        <div class="values">
                 <div class="element">
                     <span>X:</span>
-                    <c:forEach var="xValue" items="${requestScope.xValues}">
-                        <span>${xValue}</span>
+                    <c:forEach var="argumentValue" items="${requestScope.lagrangianResultDto.argumentValues}">
+                        <span>${argumentValue}</span>
                     </c:forEach>
                 </div>
                 <br>
                 <div class="element">
                     <span>Y:</span>
-                    <c:forEach var="yValue" items="${requestScope.yValues}">
-                        <span>${yValue}</span>
+                    <c:forEach var="functionValue" items="${requestScope.lagrangianResultDto.functionValues}">
+                        <span>${functionValue}</span>
                     </c:forEach>
                 </div>
-            </div>
-            <div class="result-elements">
-                <div>
-                    <span><strong>Lagrangian approximation result</strong> = ${requestScope.lagrangianResult} |</span>
-                    <span><b>Absolute fault</b> = ${requestScope.lagrangianAbsoluteFault}</span>
-                </div>
-                <div>
-                    <span><strong>Cubic spline approximation result</strong> = ${requestScope.cubicResult} |</span>
-                    <span><b>Absolute fault</b> = ${requestScope.cubicAbsoluteFault}</span>
-                </div>
-            </div>
+        </div>
+        <div class="result-elements">
+            <span><strong>Lagrangian approximation result</strong> = ${requestScope.lagrangianResultDto.result}</span>
+            <span>|</span>
+            <span><b>Absolute fault</b> = ${requestScope.lagrangianResultDto.absoluteFault}</span>
+            <span><strong>Cubic spline approximation result</strong> = ${requestScope.cubicResultDto.result}</span>
+            <span>|</span>
+            <span><b>Absolute fault</b> = ${requestScope.cubicResultDto.absoluteFault}</span>
         </div>
     </div>
-</c:if>
+</div>
 </body>
 </html>

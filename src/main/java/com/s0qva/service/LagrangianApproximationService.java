@@ -1,5 +1,7 @@
 package com.s0qva.service;
 
+import com.s0qva.dto.ApproximationResultDto;
+import com.s0qva.util.OutputConverter;
 import lombok.ToString;
 
 import java.util.List;
@@ -12,7 +14,7 @@ public final class LagrangianApproximationService extends ApproximationService {
     }
 
     @Override
-    public double calculateValueInterpolationPoint(double interpolationArgumentValue) {
+    public ApproximationResultDto calculateValueInterpolationPoint(double interpolationArgumentValue) {
         double result = 0.;
 
         for (int i = 0; i < getNumberOfGaps(); i++) {
@@ -21,7 +23,12 @@ public final class LagrangianApproximationService extends ApproximationService {
                     / calculateDenominatorLagrangePolynomial(getArgumentValues().get(i), getArgumentValues(), i);
         }
 
-        return result;
+        return ApproximationResultDto.builder()
+                .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
+                .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
+                .result(result)
+                .absoluteFault(calculateAbsoluteFault(interpolationArgumentValue, result))
+                .build();
     }
 
     private double calculateNumeratorLagrangePolynomial(double interpolationArgumentValue, List<Double> argumentValues, int skipPosition) {
@@ -48,5 +55,9 @@ public final class LagrangianApproximationService extends ApproximationService {
         }
 
         return result;
+    }
+
+    private double calculateAbsoluteFault(double interpolationArgumentValue, double lagrangianResult) {
+        return Math.abs(calculateFunctionValue(interpolationArgumentValue) - lagrangianResult);
     }
 }

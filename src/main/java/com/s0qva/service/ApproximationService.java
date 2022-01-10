@@ -1,5 +1,6 @@
 package com.s0qva.service;
 
+import com.s0qva.dto.ApproximationResultDto;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.ToString;
@@ -31,7 +32,7 @@ public abstract class ApproximationService {
         this.functionValues = createFunctionValues();
     }
 
-    public abstract double calculateValueInterpolationPoint(double interpolationArgumentValue);
+    public abstract ApproximationResultDto calculateValueInterpolationPoint(double interpolationArgumentValue);
 
     public double calculateFunctionValue(double argumentValue) {
         Argument argument = new Argument("x = " + argumentValue);

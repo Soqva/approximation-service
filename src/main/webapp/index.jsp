@@ -3,12 +3,12 @@
 <html>
 <head>
     <title>Approximation</title>
-    <style><%@include file="/WEB-INF/css/main-page.css"%></style>
+    <style><%@include file="/WEB-INF/css/index-page-styles.css"%></style>
 </head>
 <body>
     <div class="center">
         <h1>Approximation service</h1>
-        <form class="main-form" action="${pageContext.request.contextPath}/app" method="post">
+        <form class="main-form" action="${pageContext.request.contextPath}/result" method="post">
             <div class="inputbox">
                 <input type="text" name="leftBorder" id="leftBorderId">
                 <span>Left border</span>
@@ -18,8 +18,8 @@
                 <span>Right border</span>
             </div>
             <div class="inputbox">
-                <input type="text" name="n" id="nId">
-                <span>Number of parts</span>
+                <input type="text" name="numberOfGaps" id="nId">
+                <span>Number of gaps</span>
             </div>
             <div class="inputbox">
                 <input type="text" name="interpolationPoint" id="interpolationPointId">

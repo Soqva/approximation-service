@@ -1,5 +1,7 @@
 package com.s0qva.service;
 
+import com.s0qva.dto.ApproximationResultDto;
+import com.s0qva.util.OutputConverter;
 import lombok.ToString;
 import org.mariuszgromada.math.mxparser.Argument;
 import org.mariuszgromada.math.mxparser.Expression;
@@ -13,10 +15,16 @@ public final class CubicSplineService extends ApproximationService {
     }
 
     @Override
-    public double calculateValueInterpolationPoint(double interpolationArgumentValue) {
+    public ApproximationResultDto calculateValueInterpolationPoint(double interpolationArgumentValue) {
         int index = findIndex(interpolationArgumentValue);
+        double result = calculateAllTerm(index, interpolationArgumentValue);
 
-        return calculateAllTerm(index, interpolationArgumentValue);
+        return ApproximationResultDto.builder()
+                .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
+                .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
+                .result(result)
+                .absoluteFault(calculateAbsoluteFault(interpolationArgumentValue, result))
+                .build();
     }
 
     private double calculateAllTerm(int index, double interpolationArgumentValue) {
@@ -99,5 +107,9 @@ public final class CubicSplineService extends ApproximationService {
     private double calculateDerivativeValue(double argumentValue) {
         Argument argument = new Argument("x = " + argumentValue);
         return new Expression(String.format("der(%s, x)", getFunction().getFunctionExpressionString()), argument).calculate();
+    }
+
+    private double calculateAbsoluteFault(double interpolationArgumentValue, double cubicResult) {
+        return Math.abs(calculateFunctionValue(interpolationArgumentValue) - cubicResult);
     }
 }
