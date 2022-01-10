@@ -1,6 +1,7 @@
 package com.s0qva.service;
 
 import com.s0qva.dto.ApproximationResultDto;
+import com.s0qva.util.ApproximationFaultCalculator;
 import com.s0qva.util.OutputConverter;
 import lombok.ToString;
 
@@ -9,8 +10,8 @@ import java.util.List;
 @ToString
 public final class LagrangianApproximationService extends ApproximationService {
 
-    public LagrangianApproximationService(double leftBorder, double rightBorder, int polynomialDegree, String function) {
-        super(leftBorder, rightBorder, polynomialDegree, function);
+    public LagrangianApproximationService(ApproximatedFunction approximatedFunction, double leftBorder, double rightBorder, int polynomialDegree) {
+        super(approximatedFunction, leftBorder, rightBorder, polynomialDegree);
     }
 
     @Override
@@ -27,7 +28,7 @@ public final class LagrangianApproximationService extends ApproximationService {
                 .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
                 .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
                 .result(result)
-                .absoluteFault(calculateAbsoluteFault(interpolationArgumentValue, result))
+                .absoluteFault(ApproximationFaultCalculator.calculateAbsoluteFault(getApproximatedFunction(), interpolationArgumentValue, result))
                 .build();
     }
 
@@ -55,9 +56,5 @@ public final class LagrangianApproximationService extends ApproximationService {
         }
 
         return result;
-    }
-
-    private double calculateAbsoluteFault(double interpolationArgumentValue, double lagrangianResult) {
-        return Math.abs(calculateFunctionValue(interpolationArgumentValue) - lagrangianResult);
     }
 }

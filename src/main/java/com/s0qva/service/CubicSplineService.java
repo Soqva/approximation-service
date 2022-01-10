@@ -1,17 +1,16 @@
 package com.s0qva.service;
 
 import com.s0qva.dto.ApproximationResultDto;
+import com.s0qva.util.ApproximationFaultCalculator;
 import com.s0qva.util.OutputConverter;
 import lombok.ToString;
-import org.mariuszgromada.math.mxparser.Argument;
-import org.mariuszgromada.math.mxparser.Expression;
 
 @ToString
 public final class CubicSplineService extends ApproximationService {
     private final double step = (getRightBorder() - getLeftBorder()) / getNumberOfGaps();
 
-    public CubicSplineService(double leftBorder, double rightBorder, int numberOfGaps, String function) {
-        super(leftBorder, rightBorder, numberOfGaps, function);
+    public CubicSplineService(ApproximatedFunction approximatedFunction, double leftBorder, double rightBorder, int numberOfGaps) {
+        super(approximatedFunction, leftBorder, rightBorder, numberOfGaps);
     }
 
     @Override
@@ -23,7 +22,7 @@ public final class CubicSplineService extends ApproximationService {
                 .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
                 .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
                 .result(result)
-                .absoluteFault(calculateAbsoluteFault(interpolationArgumentValue, result))
+                .absoluteFault(ApproximationFaultCalculator.calculateAbsoluteFault(getApproximatedFunction(), interpolationArgumentValue, result))
                 .build();
     }
 
@@ -77,7 +76,7 @@ public final class CubicSplineService extends ApproximationService {
         }
 
         if (index == getNumberOfGaps()) {
-            return calculateDerivativeValue(getRightBorder());
+            return getApproximatedFunction().calculateDerivativeValue(getRightBorder());
         }
 
         return findLValue(index) * findLowerMValue(index + 1) + findUpperMValue(index);
@@ -102,14 +101,5 @@ public final class CubicSplineService extends ApproximationService {
         }
 
         return findLValue(index) * (findUpperMValue(index - 1) - findCValue(index));
-    }
-
-    private double calculateDerivativeValue(double argumentValue) {
-        Argument argument = new Argument("x = " + argumentValue);
-        return new Expression(String.format("der(%s, x)", getFunction().getFunctionExpressionString()), argument).calculate();
-    }
-
-    private double calculateAbsoluteFault(double interpolationArgumentValue, double cubicResult) {
-        return Math.abs(calculateFunctionValue(interpolationArgumentValue) - cubicResult);
     }
 }

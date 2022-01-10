@@ -4,6 +4,7 @@ import com.s0qva.dto.ApproximationResultDto;
 import com.s0qva.service.ApproximationService;
 import com.s0qva.service.CubicSplineService;
 import com.s0qva.service.LagrangianApproximationService;
+import com.s0qva.service.ApproximatedFunction;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -25,8 +26,9 @@ public class ResultServlet extends HttpServlet {
         double rightBorder = Double.parseDouble(req.getParameter("rightBorder"));
         int numberOfGaps = Integer.parseInt(req.getParameter("numberOfGaps"));
 
-        lagrangianApproximationService = new LagrangianApproximationService(leftBorder, rightBorder, numberOfGaps, function);
-        cubicSplineService = new CubicSplineService(leftBorder, rightBorder, numberOfGaps, function);
+        ApproximatedFunction approximatedFunction = new ApproximatedFunction(function);
+        lagrangianApproximationService = new LagrangianApproximationService(approximatedFunction, leftBorder, rightBorder, numberOfGaps);
+        cubicSplineService = new CubicSplineService(approximatedFunction, leftBorder, rightBorder, numberOfGaps);
 
         ApproximationResultDto lagrangianResultDto = lagrangianApproximationService.calculateValueInterpolationPoint(interpolationPoint);
         ApproximationResultDto cubicResultDto = cubicSplineService.calculateValueInterpolationPoint(interpolationPoint);
