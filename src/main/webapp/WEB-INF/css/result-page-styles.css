@@ -31,3 +31,26 @@ body {
     grid-template-columns: auto 10px auto;
     justify-items: left;
 }
+
+.main-form {
+    display: grid;
+    justify-content: space-around;
+}
+
+.back-button {
+    width: 300px;
+    height: 50px;
+    margin-top: 50px;
+}
+
+input {
+    top: 0;
+    left: 0;
+    width: 100%;
+    border: 2px solid #000;
+    outline: none;
+    background: none;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 1.2em;
+}
