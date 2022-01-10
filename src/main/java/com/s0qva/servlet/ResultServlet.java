@@ -37,6 +37,6 @@ public class ResultServlet extends HttpServlet {
         req.setAttribute("cubicResultDto", cubicResultDto);
         req.setAttribute("numberOfGaps", numberOfGaps + 2);
 
-        req.getRequestDispatcher("WEB-INF/jsp/result.jsp").include(req, resp);
+        req.getRequestDispatcher("WEB-INF/jsp/result.jsp").forward(req, resp);
     }
 }
