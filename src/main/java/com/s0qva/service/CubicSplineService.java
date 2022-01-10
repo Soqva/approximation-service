@@ -1,58 +1,60 @@
 package com.s0qva.service;
 
-
+import lombok.ToString;
 import org.mariuszgromada.math.mxparser.Argument;
 import org.mariuszgromada.math.mxparser.Expression;
 
+@ToString
 public final class CubicSplineService extends ApproximationService {
     private final double step = (getRightBorder() - getLeftBorder()) / getNumberOfGaps();
 
-    public CubicSplineService(double leftBorder, double rightBorder, int numberParts, String function) {
-        super(leftBorder, rightBorder, numberParts, function);
+    public CubicSplineService(double leftBorder, double rightBorder, int numberOfGaps, String function) {
+        super(leftBorder, rightBorder, numberOfGaps, function);
     }
 
     @Override
-    public double calculateValueInterpolationPoint(double interpolationXPoint) {
-        int index = findIndex(interpolationXPoint);
-        double result;
+    public double calculateValueInterpolationPoint(double interpolationArgumentValue) {
+        int index = findIndex(interpolationArgumentValue);
 
-        result = calculateFirstTerm(index, interpolationXPoint)
-                + calculateSecondTerm(index, interpolationXPoint)
-                + calculateThirdTerm(index, interpolationXPoint)
-                + calculateFourthTerm(index, interpolationXPoint);
-
-        return result;
+        return calculateAllTerm(index, interpolationArgumentValue);
     }
 
-    private double calculateFirstTerm(int index, double interpolationXPoint) {
-        return getFunctionValues().get(index - 1) * Math.pow(interpolationXPoint - getArgumentValues().get(index), 2)
-                * (2 * (interpolationXPoint - getArgumentValues().get(index - 1)) + step)
+    private double calculateAllTerm(int index, double interpolationArgumentValue) {
+        return calculateFirstTerm(index, interpolationArgumentValue)
+                + calculateSecondTerm(index, interpolationArgumentValue)
+                + calculateThirdTerm(index, interpolationArgumentValue)
+                + calculateFourthTerm(index, interpolationArgumentValue);
+    }
+
+    private double calculateFirstTerm(int index, double interpolationArgumentValue) {
+        return getFunctionValues().get(index - 1) * Math.pow(interpolationArgumentValue - getArgumentValues().get(index), 2)
+                * (2 * (interpolationArgumentValue - getArgumentValues().get(index - 1)) + step)
                 / Math.pow(step, 3);
     }
 
-    private double calculateSecondTerm(int index, double interpolationXPoint) {
-        return getFunctionValues().get(index) * Math.pow((interpolationXPoint - getArgumentValues().get(index - 1)), 2)
-                * (2 * (getArgumentValues().get(index) - interpolationXPoint) + step)
+    private double calculateSecondTerm(int index, double interpolationArgumentValue) {
+        return getFunctionValues().get(index) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
+                * (2 * (getArgumentValues().get(index) - interpolationArgumentValue) + step)
                 / Math.pow(step, 3);
     }
 
-    private double calculateThirdTerm(int index, double interpolationXPoint) {
-        return findLowerMValue(index - 1) * Math.pow((interpolationXPoint - getArgumentValues().get(index)), 2)
-                * (interpolationXPoint - getArgumentValues().get(index - 1))
+    private double calculateThirdTerm(int index, double interpolationArgumentValue) {
+        return findLowerMValue(index - 1) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index)), 2)
+                * (interpolationArgumentValue - getArgumentValues().get(index - 1))
                 / Math.pow(step, 2);
     }
 
-    private double calculateFourthTerm(int index, double interpolationXPoint) {
-        return findLowerMValue(index) * Math.pow((interpolationXPoint - getArgumentValues().get(index - 1)), 2)
-                * (interpolationXPoint - getArgumentValues().get(index))
+    private double calculateFourthTerm(int index, double interpolationArgumentValue) {
+        return findLowerMValue(index) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
+                * (interpolationArgumentValue - getArgumentValues().get(index))
                 / Math.pow(step, 2);
     }
 
-    private int findIndex(double interpolationXPoint) {
+    private int findIndex(double interpolationArgumentValue) {
         int index = 1;
 
         for (int i = 1; i < getArgumentValues().size(); i++) {
-            if (getArgumentValues().get(i - 1) <= interpolationXPoint && interpolationXPoint <= getArgumentValues().get(i)) {
+            if (getArgumentValues().get(i - 1) <= interpolationArgumentValue && interpolationArgumentValue <= getArgumentValues().get(i)) {
                 index = i;
                 break;
             }
@@ -94,8 +96,8 @@ public final class CubicSplineService extends ApproximationService {
         return findLValue(index) * (findUpperMValue(index - 1) - findCValue(index));
     }
 
-    private double calculateDerivativeValue(double argument) {
-        Argument xArgument = new Argument("x = " + argument);
-        return new Expression(String.format("der(%s, x)", getFunction().getFunctionExpressionString()), xArgument).calculate();
+    private double calculateDerivativeValue(double argumentValue) {
+        Argument argument = new Argument("x = " + argumentValue);
+        return new Expression(String.format("der(%s, x)", getFunction().getFunctionExpressionString()), argument).calculate();
     }
 }

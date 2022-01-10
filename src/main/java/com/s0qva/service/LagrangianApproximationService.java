@@ -1,7 +1,10 @@
 package com.s0qva.service;
 
+import lombok.ToString;
+
 import java.util.List;
 
+@ToString
 public final class LagrangianApproximationService extends ApproximationService {
 
     public LagrangianApproximationService(double leftBorder, double rightBorder, int polynomialDegree, String function) {
@@ -9,46 +12,41 @@ public final class LagrangianApproximationService extends ApproximationService {
     }
 
     @Override
-    public double calculateValueInterpolationPoint(double interpolationXPoint) {
-        double result = 0.0;
+    public double calculateValueInterpolationPoint(double interpolationArgumentValue) {
+        double result = 0.;
 
         for (int i = 0; i < getNumberOfGaps(); i++) {
-            result += calculateNumeratorLagrangePolynomial(interpolationXPoint, getArgumentValues(), i) * getFunctionValues().get(i)
+            result += calculateNumeratorLagrangePolynomial(interpolationArgumentValue, getArgumentValues(), i)
+                    * getFunctionValues().get(i)
                     / calculateDenominatorLagrangePolynomial(getArgumentValues().get(i), getArgumentValues(), i);
         }
 
         return result;
     }
 
-    private double calculateNumeratorLagrangePolynomial(double interpolationXPoint, List<Double> values, int skipPosition) {
-        double result = 1.0;
+    private double calculateNumeratorLagrangePolynomial(double interpolationArgumentValue, List<Double> argumentValues, int skipPosition) {
+        double result = 1.;
 
         for (int i = 0; i < getNumberOfGaps(); i++) {
             if (i == skipPosition) {
                 continue;
             }
-            result *= interpolationXPoint - values.get(i);
+            result *= interpolationArgumentValue - argumentValues.get(i);
         }
 
         return result;
     }
 
-    private double calculateDenominatorLagrangePolynomial(double kPoint, List<Double> values, int skipPosition) {
-        double result = 1.0;
+    private double calculateDenominatorLagrangePolynomial(double kPoint, List<Double> argumentValues, int skipPosition) {
+        double result = 1.;
 
         for (int i = 0; i < getNumberOfGaps(); i++) {
             if (i == skipPosition) {
                 continue;
             }
-            result *= kPoint - values.get(i);
+            result *= kPoint - argumentValues.get(i);
         }
 
         return result;
     }
-
-   /* @Override
-    public double calculateFunctionValue(double argumentValue) {
-        Argument xArgument = new Argument("x = " + argumentValue);
-        return new Expression("function(x)", getFunction(), xArgument).calculate();
-    }*/
 }
