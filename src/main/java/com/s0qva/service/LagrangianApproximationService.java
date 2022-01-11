@@ -5,8 +5,6 @@ import com.s0qva.util.ApproximationFaultCalculator;
 import com.s0qva.util.OutputConverter;
 import lombok.ToString;
 
-import java.util.List;
-
 @ToString
 public final class LagrangianApproximationService extends ApproximationService {
 
@@ -19,42 +17,37 @@ public final class LagrangianApproximationService extends ApproximationService {
         double result = 0.;
 
         for (int i = 0; i < getNumberOfGaps(); i++) {
-            result += calculateNumeratorLagrangePolynomial(interpolationArgumentValue, getArgumentValues(), i)
-                    * getFunctionValues().get(i)
-                    / calculateDenominatorLagrangePolynomial(getArgumentValues().get(i), getArgumentValues(), i);
+            result += calculateLagrangePolynomialFraction(interpolationArgumentValue, i);
         }
 
+        return buildApproximationResultDto(result, interpolationArgumentValue);
+    }
+
+    private double calculateLagrangePolynomialFraction(double interpolationArgumentValue, int skipPosition) {
+        return calculateFractionPart(interpolationArgumentValue, skipPosition)
+                * getFunctionValues().get(skipPosition)
+                / calculateFractionPart(getArgumentValues().get(skipPosition), skipPosition);
+    }
+
+    private double calculateFractionPart(double value, int skipPosition) {
+        double result = 1.;
+
+        for (int i = 0; i < getNumberOfGaps(); i++) {
+            if (i == skipPosition) {
+                continue;
+            }
+            result *= value - getArgumentValues().get(i);
+        }
+
+        return result;
+    }
+
+    private ApproximationResultDto buildApproximationResultDto(double result, double interpolationArgumentValue) {
         return ApproximationResultDto.builder()
                 .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
                 .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
                 .result(result)
                 .absoluteFault(ApproximationFaultCalculator.calculateAbsoluteFault(getApproximatedFunction(), interpolationArgumentValue, result))
                 .build();
-    }
-
-    private double calculateNumeratorLagrangePolynomial(double interpolationArgumentValue, List<Double> argumentValues, int skipPosition) {
-        double result = 1.;
-
-        for (int i = 0; i < getNumberOfGaps(); i++) {
-            if (i == skipPosition) {
-                continue;
-            }
-            result *= interpolationArgumentValue - argumentValues.get(i);
-        }
-
-        return result;
-    }
-
-    private double calculateDenominatorLagrangePolynomial(double kPoint, List<Double> argumentValues, int skipPosition) {
-        double result = 1.;
-
-        for (int i = 0; i < getNumberOfGaps(); i++) {
-            if (i == skipPosition) {
-                continue;
-            }
-            result *= kPoint - argumentValues.get(i);
-        }
-
-        return result;
     }
 }

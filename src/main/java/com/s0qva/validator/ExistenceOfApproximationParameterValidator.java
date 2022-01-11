@@ -10,18 +10,12 @@ public class ExistenceOfApproximationParameterValidator implements Validator {
     @Override
     public boolean isValid(ApproximationParameterType parameterType, String... parameters) {
         if (parameterType == ApproximationParameterType.NUMBER) {
-            for (String parameter : parameters) {
-                try {
-                    Double.parseDouble(parameter);
-                } catch (NumberFormatException exception) {
-                    return false;
-                }
-            }
-            return true;
+            return Arrays.stream(parameters)
+                    .allMatch(parameter -> isValid(parameterType, parameter));
         }
 
         return Arrays.stream(parameters)
-                .noneMatch(parameter -> parameter == null || parameter.isBlank());
+                .allMatch(parameter -> isValid(parameterType, parameter));
     }
 
     @Override
@@ -32,6 +26,7 @@ public class ExistenceOfApproximationParameterValidator implements Validator {
             } catch (NumberFormatException exception) {
                 return false;
             }
+            return true;
         }
 
         return parameter != null && !parameter.isBlank();

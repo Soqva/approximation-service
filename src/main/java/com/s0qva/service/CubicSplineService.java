@@ -18,12 +18,7 @@ public final class CubicSplineService extends ApproximationService {
         int index = findIndex(interpolationArgumentValue);
         double result = calculateAllTerm(index, interpolationArgumentValue);
 
-        return ApproximationResultDto.builder()
-                .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
-                .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
-                .result(result)
-                .absoluteFault(ApproximationFaultCalculator.calculateAbsoluteFault(getApproximatedFunction(), interpolationArgumentValue, result))
-                .build();
+        return buildApproximationResultDto(result, interpolationArgumentValue);
     }
 
     private double calculateAllTerm(int index, double interpolationArgumentValue) {
@@ -34,25 +29,29 @@ public final class CubicSplineService extends ApproximationService {
     }
 
     private double calculateFirstTerm(int index, double interpolationArgumentValue) {
-        return getFunctionValues().get(index - 1) * Math.pow(interpolationArgumentValue - getArgumentValues().get(index), 2)
+        return getFunctionValues().get(index - 1)
+                * Math.pow(interpolationArgumentValue - getArgumentValues().get(index), 2)
                 * (2 * (interpolationArgumentValue - getArgumentValues().get(index - 1)) + step)
                 / Math.pow(step, 3);
     }
 
     private double calculateSecondTerm(int index, double interpolationArgumentValue) {
-        return getFunctionValues().get(index) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
+        return getFunctionValues().get(index)
+                * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
                 * (2 * (getArgumentValues().get(index) - interpolationArgumentValue) + step)
                 / Math.pow(step, 3);
     }
 
     private double calculateThirdTerm(int index, double interpolationArgumentValue) {
-        return findLowerMValue(index - 1) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index)), 2)
+        return findLowerMValue(index - 1)
+                * Math.pow((interpolationArgumentValue - getArgumentValues().get(index)), 2)
                 * (interpolationArgumentValue - getArgumentValues().get(index - 1))
                 / Math.pow(step, 2);
     }
 
     private double calculateFourthTerm(int index, double interpolationArgumentValue) {
-        return findLowerMValue(index) * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
+        return findLowerMValue(index)
+                * Math.pow((interpolationArgumentValue - getArgumentValues().get(index - 1)), 2)
                 * (interpolationArgumentValue - getArgumentValues().get(index))
                 / Math.pow(step, 2);
     }
@@ -101,5 +100,14 @@ public final class CubicSplineService extends ApproximationService {
         }
 
         return findLValue(index) * (findUpperMValue(index - 1) - findCValue(index));
+    }
+
+    private ApproximationResultDto buildApproximationResultDto(double result, double interpolationArgumentValue) {
+        return ApproximationResultDto.builder()
+                .argumentValues(OutputConverter.convertDoubleListToOutputStringList(getArgumentValues()))
+                .functionValues(OutputConverter.convertDoubleListToOutputStringList(getFunctionValues()))
+                .result(result)
+                .absoluteFault(ApproximationFaultCalculator.calculateAbsoluteFault(getApproximatedFunction(), interpolationArgumentValue, result))
+                .build();
     }
 }
