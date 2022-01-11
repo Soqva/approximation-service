@@ -5,11 +5,11 @@ import lombok.ToString;
 import java.util.Arrays;
 
 @ToString
-public class ApproximationParametersValidator implements Validator {
+public class ExistenceOfApproximationParameterValidator implements Validator {
 
     @Override
-    public boolean isValid(ApproximationParameter parameterType, String... parameters) {
-        if (parameterType == ApproximationParameter.NUMBER) {
+    public boolean isValid(ApproximationParameterType parameterType, String... parameters) {
+        if (parameterType == ApproximationParameterType.NUMBER) {
             for (String parameter : parameters) {
                 try {
                     Double.parseDouble(parameter);
@@ -25,8 +25,8 @@ public class ApproximationParametersValidator implements Validator {
     }
 
     @Override
-    public boolean isValid(ApproximationParameter parameterType, String parameter) {
-        if (parameterType == ApproximationParameter.NUMBER) {
+    public boolean isValid(ApproximationParameterType parameterType, String parameter) {
+        if (parameterType == ApproximationParameterType.NUMBER) {
             try {
                 Double.parseDouble(parameter);
             } catch (NumberFormatException exception) {

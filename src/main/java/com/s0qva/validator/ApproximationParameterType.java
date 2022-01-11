@@ -1,6 +1,6 @@
 package com.s0qva.validator;
 
-public enum ApproximationParameter {
+public enum ApproximationParameterType {
     NUMBER,
     STRING
 }

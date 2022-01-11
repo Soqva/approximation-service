@@ -7,11 +7,11 @@ import java.util.stream.Collectors;
 
 @UtilityClass
 public class OutputConverter {
-    private static final String OUTPUT_FORMAT = "%2.f";
+    private final String OUTPUT_FORMAT = "%.2f";
 
     public List<String> convertDoubleListToOutputStringList(List<Double> list) {
         return list.stream()
-                .map(value -> String.format("%.2f", value))
+                .map(value -> String.format(OUTPUT_FORMAT, value))
                 .collect(Collectors.toList());
     }
 }

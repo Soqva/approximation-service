@@ -5,6 +5,7 @@ import com.s0qva.service.ApproximationService;
 import com.s0qva.service.CubicSplineService;
 import com.s0qva.service.LagrangianApproximationService;
 import com.s0qva.service.ApproximatedFunction;
+import com.s0qva.util.PathHelper;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -35,8 +36,8 @@ public class ResultServlet extends HttpServlet {
 
         req.setAttribute("lagrangianResultDto", lagrangianResultDto);
         req.setAttribute("cubicResultDto", cubicResultDto);
-        req.setAttribute("numberOfGaps", numberOfGaps + 2);
+        req.setAttribute("numberOfPoints", numberOfGaps + 2);
 
-        req.getRequestDispatcher("WEB-INF/jsp/result.jsp").forward(req, resp);
+        req.getRequestDispatcher(PathHelper.getJspPath("result")).forward(req, resp);
     }
 }

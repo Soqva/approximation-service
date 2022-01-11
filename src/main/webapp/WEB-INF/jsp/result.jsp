@@ -7,7 +7,7 @@
         .element {
             display: grid;
             grid-gap: 1rem;
-            grid-template-columns: repeat(${requestScope.numberOfGaps}, 3rem);
+            grid-template-columns: repeat(${requestScope.numberOfPoints}, 3rem);
         }
     </style>
     <style>
@@ -40,7 +40,7 @@
             <span>|</span>
             <span><b>Absolute fault</b> = ${requestScope.cubicResultDto.absoluteFault}</span>
         </div>
-        <form class="main-form" action="${pageContext.request.contextPath}" method="get">
+        <form class="main-form" action="${pageContext.request.contextPath}/" method="get">
             <div class="back-button">
                 <input type="submit" value="back">
             </div>

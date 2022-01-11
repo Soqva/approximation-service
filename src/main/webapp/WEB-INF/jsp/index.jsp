@@ -31,9 +31,9 @@
             <input type="text" name="function" id="functionId">
             <span>Function</span>
         </div>
-        <c:if test="${requestScope.invalidField != null}">
+        <c:if test="${param.invalidField != null}">
             <div class="invalidBox">
-                <span>${requestScope.invalidField}</span>
+                <span>SOME FIELDS ARE INVALID</span>
             </div>
         </c:if>
         <div class="inputbox">
